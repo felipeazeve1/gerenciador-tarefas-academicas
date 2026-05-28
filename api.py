@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def enviar_lembrete_telegram(titulo_tarefa, prazo):
     TOKEN_BOT = os.getenv("TELEGRAM_TOKEN")
     SEU_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")

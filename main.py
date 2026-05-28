@@ -1,7 +1,11 @@
 from arquivos import carregar_tarefas, salvar_tarefas
 from operacoes import adicionar_tarefas, listar_tarefas, concluir_tarefa, deletar_tarefa, buscar_tarefa_por_texto, filtrar_tarefas_pendentes
+from banco import criar_tabela
+
 
 def main():
+    criar_tabela()
+
     print("=== GERENCIADOR DE TAREFAS ACADÊMICAS ===\n")
 
     lista_de_tarefas = carregar_tarefas()

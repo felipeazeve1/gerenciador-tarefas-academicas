@@ -2,3 +2,4 @@ venv/
 tarefas.json
 __pycache__/
 .env
+*.db

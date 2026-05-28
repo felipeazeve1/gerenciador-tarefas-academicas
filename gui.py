@@ -1,20 +1,23 @@
 import tkinter as tk
 import customtkinter as ctk 
 from tkinter import messagebox
-from arquivos import carregar_tarefas, salvar_tarefas
+from banco import criar_tabela, inserir_tarefa, listar_tarefas, marcar_como_concluida, deletar_tarefa
 from api import enviar_lembrete_telegram
+
 
 # Configuração global do tema:
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
+
 def criar_janela():
+    criar_tabela()
+
     janela = ctk.CTk()
     janela.title("Gerenciador de Tarefas Acadêmicas")
     janela.geometry("550x650")
-    
-    dados_tarefas = carregar_tarefas()
-    
+
+
     #CAMPOS DE ENTRADA 
     lbl_titulo = ctk.CTkLabel(janela, text="Título da Tarefa:", font=("Arial", 12, "bold"))
     lbl_titulo.pack(pady=(15, 0))
@@ -31,12 +34,17 @@ def criar_janela():
     ent_prazo = ctk.CTkEntry(janela, width=350, placeholder_text="Ex: 30/05/2026")
     ent_prazo.pack(pady=5)
     
+
     def atualizar_lista_visual():
         lista_visual.delete(0, tk.END)
-        for tarefa in dados_tarefas:
-            status = "✅" if tarefa["concluida"] else "❌"
-            texto_linha = f" {status}  {tarefa['titulo']} ({tarefa['materia']}) - Prazo: {tarefa['prazo']}"
+
+        tarefas_do_banco = listar_tarefas()
+
+        for tarefa in tarefas_do_banco:
+            status = "✅" if tarefa[4] == 1 else "❌"
+            texto_linha = f" {status}  {tarefa[1]} ({tarefa[2]}) - Prazo: {tarefa[3]}"
             lista_visual.insert(tk.END, texto_linha)
+
 
     def acao_adicionar():
         t = ent_titulo.get()
@@ -47,15 +55,9 @@ def criar_janela():
             messagebox.showwarning("⚠️ Atenção", "Por favor, preencha todos os campos!")
             return
             
-        nova_tarefa = {
-            "titulo": t,
-            "materia": m,
-            "prazo": p,
-            "concluida": False
-        }
-        
-        dados_tarefas.append(nova_tarefa)
-        salvar_tarefas(dados_tarefas)
+        inserir_tarefa(t, m, p)
+
+    
         enviar_lembrete_telegram(t, p)
         
         atualizar_lista_visual()
@@ -77,19 +79,29 @@ def criar_janela():
     def acao_concluir():
         try:
             indice_selecionado = lista_visual.curselection()[0]
-            dados_tarefas[indice_selecionado]["concluida"] = True
-            salvar_tarefas(dados_tarefas)
+            
+            tarefas_do_banco = listar_tarefas()
+            id_real_da_tarefa = tarefas_do_banco[indice_selecionado][0] 
+            
+            marcar_como_concluida(id_real_da_tarefa)
+            
             atualizar_lista_visual()
+
         except IndexError:
             messagebox.showwarning("⚠️ Erro", "Por favor, selecione uma tarefa da lista primeiro!")
 
     def acao_excluir():
         try:
             indice_selecionado = lista_visual.curselection()[0]
-            dados_tarefas.pop(indice_selecionado)
-            salvar_tarefas(dados_tarefas)
+            
+            tarefas_do_banco = listar_tarefas()
+            id_real_da_tarefa = tarefas_do_banco[indice_selecionado][0]
+            
+            deletar_tarefa(id_real_da_tarefa)
+            
             atualizar_lista_visual()
             messagebox.showinfo("🗑️ Removida", "Tarefa excluída com sucesso!")
+
         except IndexError:
             messagebox.showwarning("⚠️ Erro", "Por favor, selecione uma tarefa da lista primeiro!")
 
