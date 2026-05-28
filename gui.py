@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk 
 from tkinter import messagebox
 from arquivos import carregar_tarefas, salvar_tarefas
+from api import enviar_lembrete_telegram
 
 # Configuração global do tema:
 ctk.set_appearance_mode("Dark")
@@ -55,6 +56,8 @@ def criar_janela():
         
         dados_tarefas.append(nova_tarefa)
         salvar_tarefas(dados_tarefas)
+        enviar_lembrete_telegram(t, p)
+        
         atualizar_lista_visual()
         
         messagebox.showinfo("🎉 Sucesso", f"Tarefa '{t}' adicionada com sucesso!")
