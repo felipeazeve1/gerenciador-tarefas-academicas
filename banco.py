@@ -2,9 +2,8 @@ import sqlite3
 
 def conectar_banco():
     #Conecta ao arquivo do banco (se não existir, ele cria o arquivo automaticamente)
-    conexao = sqlite3.connect("sistema_tarefas.db")
-    return conexao
-
+    return sqlite3.connect("sistema_tarefas.db")
+ 
 
 def criar_tabela():
     conexao = conectar_banco()
